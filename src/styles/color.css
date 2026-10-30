@@ -1,0 +1,30 @@
+@theme {
+    /* رنگ آبی */
+    --color-blue: #0D1E52;
+  
+    /* رنگ  متون    */
+    --color-text1: #FFFFFF;
+    --color-text2: #000000;
+  
+    /* رنگ پس‌زمینه صفحات */
+    --color-background: #ffffff;
+  
+  
+    /* رنگ آیکن ها */
+    --color-icon: #838383;
+  
+    /* رنگ موفقیت */
+    /* --color-success: #16a34a; */
+  
+    /* رنگ خطا */
+    --color-danger: #D20000;
+  
+    /* رنگ حاشیه‌ها */
+    --color-input:#FAFAFA;
+
+    /* رنگ بردر ها */
+    /* --color-input: #263A76; */
+    
+
+  }
+  
