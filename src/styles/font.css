@@ -1,0 +1,31 @@
+@font-face {
+    font-family: dana;
+    font-style: normal;
+    font-weight: 100;
+    src: url(../../public/fonts/woff/Dana-Light.woff) format('woff'),
+    url(../../public/fonts/woff2/Dana-Light.woff2) format('woff2');
+}
+
+@font-face {
+    font-family: dana;
+    font-style: normal;
+    font-weight: 200;
+    src: url(../../public/fonts/woff/Dana-Regular.woff) format('woff'),
+    url(../../public/fonts/woff2/Dana-Regular.woff2) format('woff2');
+}
+
+@font-face {
+    font-family: dana;
+    font-style: normal;
+    font-weight: 600;
+    src: url(../../public/fonts/woff/Dana-Medium.woff) format('woff'),
+    url(../../public/fonts/woff2/Dana-Medium.woff2) format('woff2');
+}
+
+@font-face {
+    font-family: dana;
+    font-style: normal;
+    font-weight: 900;
+    src: url(../../public/fonts/woff/Dana-Light.woff) format('woff'),
+    url(../../public/fonts/woff2/Dana-Light.woff2) format('woff2');
+}
