@@ -92,7 +92,7 @@ export default function Login() {
       <form
         onSubmit={handleSubmit}
         noValidate
-        className="w-[85%] mt-[22px] flex flex-col gap-[15px]"
+        className="w-[85%] mt-[22px] flex flex-col gap-[15px] mx-auto"
       >
         {/* نام و نام خانوادگی */}
         <div className="relative">
@@ -166,7 +166,7 @@ export default function Login() {
       </form>
 
       {/* شبکه‌های اجتماعی */}
-      <div className="mt-18 flex justify-center gap-[28px]">
+      <div className="mt-12 flex justify-center gap-[28px]">
         <a
           href="https://twitter.com/"
           target="_blank"

@@ -3,16 +3,18 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import Login from "./components/pages/Login";
 import Home from "./components/pages/Home/Home";
+import Calendar from "./components/pages/Calendar";
+
 import BottomNav from "./components/public/BottomNav";
 import AppLayout from "./components/layout/AppLayout";
 
-function App() {
+export default function App() {
   const [showModal, setShowModal] = useState(false);
 
   return (
     <BrowserRouter>
       <Routes>
-
+        {/* صفحه ورود */}
         <Route
           path="/"
           element={
@@ -22,25 +24,33 @@ function App() {
           }
         />
 
+        {/* صفحه اصلی */}
         <Route
           path="/home"
           element={
             <AppLayout>
-              <Home
-                showModal={showModal}
-                setShowModal={setShowModal}
-              />
+              <Home showModal={showModal} setShowModal={setShowModal} />
 
               {!showModal && <BottomNav />}
             </AppLayout>
           }
         />
 
-        <Route path="*" element={<Navigate to="/" />} />
+        {/* صفحه تقویم */}
+        <Route
+          path="/calendar"
+          element={
+            <AppLayout>
+              <Calendar />
+              <BottomNav />
+            </AppLayout>
+          }
+        />
 
+        {/* مسیرهای نامعتبر */}
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </BrowserRouter>
   );
 }
 
-export default App;
