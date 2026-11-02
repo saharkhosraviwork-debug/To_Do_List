@@ -90,17 +90,17 @@ export default function Calendar() {
   return (
     <div className="w-full flex-1 bg-input px-3 pt-4">
       {/* ماه و سال */}
-      <div className="flex items-center justify-between mb-7">
+      <div className="flex items-center justify-between mb-6">
         <button onClick={previousMonth}>
-          <ChevronRight size={24} color="#14265D" />
+          <ChevronRight size={24} color="#0D1E52" />
         </button>
 
-        <h2 className="font-bold text-blue">
+        <h2 className="font-extrabold text-blue font-[14px]">
           {months[month - 1]} {year}
         </h2>
 
         <button onClick={nextMonth}>
-          <ChevronLeft size={24} color="#14265D" />
+          <ChevronLeft size={24} color="#0D1E52" />
         </button>
       </div>
 
@@ -120,12 +120,12 @@ export default function Calendar() {
             {day !== "" && (
               <button
                 onClick={() => setSelectedDay(day)}
-                className={`w-[20px] h-[20px] rounded-[5px] text-[12px]
+                className={`w-[22px] h-[22px] rounded-[4px] text-[12px] p-1
                   ${
                     isToday(day)
-                      ? "bg-[#14265D] text-white"
+                      ? "bg-blue text-white p-1"
                       : selectedDay === day
-                      ? "bg-[#E8ECF8] text-[#14265D]"
+                      ? "bg-input text-blue font-bold"
                       : "text-gray-500"
                   }
                 `}

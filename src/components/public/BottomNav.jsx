@@ -1,11 +1,5 @@
-
 import { NavLink } from "react-router-dom";
-import {
-  House,
-  ChartNoAxesColumn,
-  CalendarDays,
-  Share2,
-} from "lucide-react";
+import { House, ChartNoAxesColumnIncreasing, Calendar , Link  } from "lucide-react";
 
 export default function BottomNav() {
   const menuItems = [
@@ -17,22 +11,22 @@ export default function BottomNav() {
     {
       title: "وضعیت",
       path: "/status",
-      icon: ChartNoAxesColumn,
+      icon: ChartNoAxesColumnIncreasing,
     },
     {
       title: "تقویم",
       path: "/calendar",
-      icon: CalendarDays,
+      icon: Calendar ,
     },
     {
-      title: "اشتراک‌ گذاری",
+      title: "ارسال",
       path: "/share",
-      icon: Share2,
+      icon: Link ,
     },
   ];
 
   return (
-    <nav className="mt-auto w-full shrink-0  bg-input">
+    <nav className="mt-auto w-full shrink-0 bg-input">
       <div className="flex h-[65px] w-full items-center justify-around px-1">
         {menuItems.map((item) => {
           const Icon = item.icon;
@@ -47,11 +41,21 @@ export default function BottomNav() {
                 }`
               }
             >
-              <Icon size={22} strokeWidth={2} />
+              {({ isActive }) => (
+                <>
+                  <div className="flex flex-col items-center gap-1">
+                    <div
+                      className={`w-1 h-1 rounded-full ${
+                        isActive ? "bg-blue" : "bg-transparent"
+                      }`}
+                    />
 
-              <span className="text-[10px] font-bold">
-                {item.title}
-              </span>
+                    <Icon size={22} strokeWidth={2} />
+                  </div>
+
+                  <span className="text-[10px] font-semibold">{item.title}</span>
+                </>
+              )}
             </NavLink>
           );
         })}

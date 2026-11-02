@@ -78,7 +78,7 @@ export default function Login() {
   return (
     <>
       {/* سربرگ صفحه ورود */}
-      <div className="bg-blue relative flex h-[200px] w-full flex-col items-center justify-center overflow-hidden rounded-bl-[55px]">
+      <div className="bg-blue relative flex h-[210px] w-full flex-col items-center justify-center overflow-hidden rounded-bl-[55px]">
         <h1 className="relative z-10 text-[20px] font-bold text-white">
           ورود به پنل برنامه ریزی
         </h1>

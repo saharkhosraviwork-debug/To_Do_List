@@ -4,12 +4,15 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./components/pages/Login";
 import Home from "./components/pages/Home/Home";
 import Calendar from "./components/pages/Calendar";
-
 import BottomNav from "./components/public/BottomNav";
 import AppLayout from "./components/layout/AppLayout";
+import Settings from "./components/pages/Setting";
 
 export default function App() {
   const [showModal, setShowModal] = useState(false);
+
+  // مدیریت تم برنامه
+  const [theme, setTheme] = useState("light");
 
   return (
     <BrowserRouter>
@@ -18,7 +21,7 @@ export default function App() {
         <Route
           path="/"
           element={
-            <AppLayout>
+            <AppLayout theme={theme}>
               <Login />
             </AppLayout>
           }
@@ -28,10 +31,24 @@ export default function App() {
         <Route
           path="/home"
           element={
-            <AppLayout>
-              <Home showModal={showModal} setShowModal={setShowModal} />
+            <AppLayout theme={theme}>
+              <Home
+                showModal={showModal}
+                setShowModal={setShowModal}
+                theme={theme}
+              />
 
               {!showModal && <BottomNav />}
+            </AppLayout>
+          }
+        />
+
+        {/* صفحه تنظیمات */}
+        <Route
+          path="/settings"
+          element={
+            <AppLayout theme={theme}>
+              <Settings theme={theme} setTheme={setTheme} />
             </AppLayout>
           }
         />
@@ -40,8 +57,8 @@ export default function App() {
         <Route
           path="/calendar"
           element={
-            <AppLayout>
-              <Calendar />
+            <AppLayout theme={theme}>
+              <Calendar theme={theme} />
               <BottomNav />
             </AppLayout>
           }
@@ -53,4 +70,3 @@ export default function App() {
     </BrowserRouter>
   );
 }
-

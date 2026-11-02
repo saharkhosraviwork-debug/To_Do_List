@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useSearchParams, useLocation, useNavigate } from "react-router-dom";
 
 import { Settings, Search, Bell, Plus, X, ChevronDown } from "lucide-react";
 
@@ -11,7 +11,30 @@ export default function Home({ showModal, setShowModal }) {
   const location = useLocation();
   const fullname = location.state?.fullname || "کاربر";
 
-  const [activeFilter, setActiveFilter] = useState("شخصی");
+  const [searchParams, setSearchParams] = useSearchParams();
+
+ 
+  const categories = {
+    all: "همه",
+    personal: "شخصی",
+    work: "کار",
+    shopping: "خرید",
+  };
+
+  
+  const categoryParam = searchParams.get("category") || "all";
+
+  const activeFilter = categories[categoryParam] || "همه";
+
+  const handleFilterChange = (filterTitle) => {
+    const categoryEntry = Object.entries(categories).find(
+      ([key, value]) => value === filterTitle
+    );
+
+    const categoryValue = categoryEntry ? categoryEntry[0] : "all";
+
+    setSearchParams({ category: categoryValue });
+  };
 
   const [tasks, setTasks] = useState(() => {
     try {
@@ -22,12 +45,14 @@ export default function Home({ showModal, setShowModal }) {
     }
   });
 
+  const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [taskTitle, setTaskTitle] = useState("");
   const [taskCategory, setTaskCategory] = useState("");
   const [showCategories, setShowCategories] = useState(false);
 
   const [editingTaskId, setEditingTaskId] = useState(null);
+
   useEffect(() => {
     localStorage.setItem("tasks", JSON.stringify(tasks));
   }, [tasks]);
@@ -45,7 +70,7 @@ export default function Home({ showModal, setShowModal }) {
     }
   };
 
-  // انیمیشن برای  باز شدن مودال
+  // انیمیشن برای باز شدن مودال
   useEffect(() => {
     if (showModal) {
       const timer = setTimeout(() => {
@@ -74,7 +99,6 @@ export default function Home({ showModal, setShowModal }) {
     }
 
     if (editingTaskId !== null) {
-      // ویرایش تسک قبلی
       setTasks((previousTasks) =>
         previousTasks.map((task) =>
           task.id === editingTaskId
@@ -87,7 +111,6 @@ export default function Home({ showModal, setShowModal }) {
         )
       );
     } else {
-      // ساخت تسک جدید
       const newTask = {
         id: Date.now(),
         title: taskTitle.trim(),
@@ -115,7 +138,7 @@ export default function Home({ showModal, setShowModal }) {
     setTasks((previousTasks) => previousTasks.filter((task) => task.id !== id));
   };
 
-  // تیک زدنو  برداشتن تیک تسک
+  // تیک زدن و برداشتن تیک تسک
   const toggleTask = (id) => {
     setTasks((previousTasks) =>
       previousTasks.map((task) =>
@@ -139,17 +162,23 @@ export default function Home({ showModal, setShowModal }) {
   };
 
   // نمایش تسک‌های دسته‌بندی انتخاب‌شده
-  const filteredTasks = tasks.filter((task) => task.category === activeFilter);
+  const filteredTasks =
+    activeFilter === "همه"
+      ? tasks
+      : tasks.filter((task) => task.category === activeFilter);
 
   return (
     <div className="w-full flex flex-col flex-1 min-h-0 relative">
       {/* هدر صفحه */}
       <div className="h-[200px] w-full bg-input flex items-center justify-between flex-col px-2 relative shrink-0">
-        <button className="absolute top-[12px] left-5 text-icon cursor-pointer">
+        <button
+          onClick={() => navigate("/settings")}
+          className="absolute top-[12px] left-5 text-icon cursor-pointer"
+        >
           <Settings size={22} />
         </button>
 
-        <div className="absolute top-[12px] right-5 flex items-center gap-5">
+        <div className="absolute top-[12px] right-5 flex items-center gap-3">
           <button className="text-icon cursor-pointer">
             <Search size={22} />
           </button>
@@ -170,7 +199,6 @@ export default function Home({ showModal, setShowModal }) {
               />
             </div>
 
-            {/* ورودی انتخاب عکس */}
             <input
               type="file"
               accept="image/*"
@@ -179,7 +207,6 @@ export default function Home({ showModal, setShowModal }) {
               onChange={handleImageChange}
             />
 
-            {/* دکمه انتخاب عکس */}
             <label
               htmlFor="profile-upload"
               className="absolute bottom-1 right-0 w-5 h-5 rounded-full bg-blue text-white flex items-center justify-center border-2 border-white cursor-pointer"
@@ -188,7 +215,7 @@ export default function Home({ showModal, setShowModal }) {
             </label>
           </div>
 
-          <h2 className="mt-1.5 text-[15px] text-black font-bold">
+          <h2 className="mt-1.5 text-[15px] text-black font-semibold">
             {fullname}
           </h2>
         </div>
@@ -196,7 +223,7 @@ export default function Home({ showModal, setShowModal }) {
         {/* فیلتر دسته‌بندی‌ها */}
         <HomeFilter
           activeFilter={activeFilter}
-          setActiveFilter={setActiveFilter}
+          setActiveFilter={handleFilterChange}
         />
       </div>
 
@@ -225,7 +252,6 @@ export default function Home({ showModal, setShowModal }) {
             }`}
             onClick={(e) => e.stopPropagation()}
           >
-            {/*  مودال */}
             <div className="flex items-center justify-between mb-5">
               <h3 className="font-bold text-[16px]">
                 {editingTaskId !== null ? "ویرایش تسک" : "افزودن تسک جدید"}
@@ -236,7 +262,7 @@ export default function Home({ showModal, setShowModal }) {
               </button>
             </div>
 
-            {/* ورودی  تسک */}
+            {/* ورودی تسک */}
             <input
               type="text"
               placeholder="تسک را وارد کنید"
@@ -263,17 +289,16 @@ export default function Home({ showModal, setShowModal }) {
                 />
               </button>
 
-              {/*  دسته‌بندی */}
               {showCategories && (
                 <div className="absolute mt-1.5 left-0 right-0 z-50 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden">
-                  {["شخصی", "امروز", "کار", "خرید"].map((category) => (
+                  {["شخصی", "کار", "خرید"].map((category) => (
                     <button
                       key={category}
                       onClick={() => {
                         setTaskCategory(category);
                         setShowCategories(false);
                       }}
-                      className="w-full text-right p-1.5 text-[12px] hover:bg-gray-200"
+                      className="w-full text-right p-2 text-[13px] hover:bg-gray-200"
                     >
                       {category}
                     </button>
@@ -282,7 +307,6 @@ export default function Home({ showModal, setShowModal }) {
               )}
             </div>
 
-            {/* دکمه افزودن */}
             <button
               onClick={addTask}
               className="w-full bg-blue text-white rounded-[18px] p-2.5 mt-5 cursor-pointer"
