@@ -2,6 +2,15 @@
 
 @import "styles/color.css";
 @import "styles/font.css";
-body {
-  font-family:"dana";
+
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: "dana";
+  }
 }

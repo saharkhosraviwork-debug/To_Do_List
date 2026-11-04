@@ -1,0 +1,343 @@
+import { useState, useEffect } from "react";
+import { useSearchParams, useLocation, useNavigate } from "react-router-dom";
+
+import { Settings, Search, Bell, Plus, X, ChevronDown } from "lucide-react";
+
+import HomeFilter from "./HomeFillter.jsx";
+import TaskList from "./TaskList.jsx";
+import AddButton from "../../public/FloatingButton.jsx";
+
+export default function Home({ showModal, setShowModal }) {
+  const location = useLocation();
+  const fullname = location.state?.fullname || "کاربر";
+
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const categories = {
+    all: "همه",
+    personal: "شخصی",
+    work: "کار",
+    shopping: "خرید",
+  };
+
+  const categoryParam = searchParams.get("category") || "all";
+  const activeFilter = categories[categoryParam] || "همه";
+
+  const handleFilterChange = (filterTitle) => {
+    const categoryEntry = Object.entries(categories).find(
+      ([key, value]) => value === filterTitle
+    );
+
+    const categoryValue = categoryEntry ? categoryEntry[0] : "all";
+
+    setSearchParams({ category: categoryValue });
+  };
+
+  const [tasks, setTasks] = useState(() => {
+    try {
+      const savedTasks = localStorage.getItem("tasks");
+      return savedTasks ? JSON.parse(savedTasks) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const navigate = useNavigate();
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [taskTitle, setTaskTitle] = useState("");
+  const [taskCategory, setTaskCategory] = useState("");
+  const [showCategories, setShowCategories] = useState(false);
+  const [editingTaskId, setEditingTaskId] = useState(null);
+
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchText, setSearchText] = useState("");
+
+  useEffect(() => {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  }, [tasks]);
+
+  const [profileImage, setProfileImage] = useState(
+    "/public/image/profile_shape.svg"
+  );
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setProfileImage(imageUrl);
+    }
+  };
+
+  useEffect(() => {
+    if (showModal) {
+      const timer = setTimeout(() => {
+        setIsModalOpen(true);
+      }, 10);
+
+      return () => clearTimeout(timer);
+    }
+
+    setIsModalOpen(false);
+  }, [showModal]);
+
+  const openAddModal = () => {
+    setEditingTaskId(null);
+    setTaskTitle("");
+    setTaskCategory("");
+    setShowCategories(false);
+    setShowModal(true);
+  };
+
+  const addTask = () => {
+    if (taskTitle.trim() === "" || taskCategory === "") {
+      return;
+    }
+
+    if (editingTaskId !== null) {
+      setTasks((previousTasks) =>
+        previousTasks.map((task) =>
+          task.id === editingTaskId
+            ? {
+                ...task,
+                title: taskTitle.trim(),
+                category: taskCategory,
+              }
+            : task
+        )
+      );
+    } else {
+      const newTask = {
+        id: Date.now(),
+        title: taskTitle.trim(),
+        category: taskCategory,
+        completed: false,
+      };
+
+      setTasks((previousTasks) => [...previousTasks, newTask]);
+    }
+
+    closeModal();
+  };
+
+  const editTask = (task) => {
+    setEditingTaskId(task.id);
+    setTaskTitle(task.title);
+    setTaskCategory(task.category);
+    setShowCategories(false);
+    setShowModal(true);
+  };
+
+  const deleteTask = (id) => {
+    setTasks((previousTasks) => previousTasks.filter((task) => task.id !== id));
+  };
+
+  const toggleTask = (id) => {
+    setTasks((previousTasks) =>
+      previousTasks.map((task) =>
+        task.id === id
+          ? {
+              ...task,
+              completed: !task.completed,
+            }
+          : task
+      )
+    );
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setShowCategories(false);
+    setEditingTaskId(null);
+    setTaskTitle("");
+    setTaskCategory("");
+  };
+
+  const toggleSearch = () => {
+    setShowSearch(!showSearch);
+    setSearchText("");
+  };
+
+  const filteredTasks =
+    activeFilter === "همه"
+      ? tasks
+      : tasks.filter((task) => task.category === activeFilter);
+
+  const searchedTasks = filteredTasks.filter((task) =>
+    task.title.toLowerCase().includes(searchText.trim().toLowerCase())
+  );
+
+  return (
+    <div className="w-full flex flex-col flex-1 min-h-0 relative">
+      <div className="h-[200px] w-full bg-input flex items-center justify-between flex-col px-2 relative shrink-0">
+        <button
+          onClick={() => navigate("/settings")}
+          className="absolute top-[12px] left-5 text-icon cursor-pointer"
+        >
+          <Settings size={22} />
+        </button>
+
+        <div className="absolute top-[12px] right-5 flex items-center gap-3">
+          <button onClick={toggleSearch} className="text-icon cursor-pointer">
+            {showSearch ? <X size={22} /> : <Search size={22} />}
+          </button>
+
+          <button className="text-icon cursor-pointer">
+            <Bell size={22} />
+          </button>
+        </div>
+
+        <div className="flex flex-col items-center m-auto mt-[40px]">
+          <div className="relative">
+            <div className="w-[75px] h-[75px] rounded-full overflow-hidden">
+              <img
+                src={profileImage}
+                alt="تصویر پروفایل"
+                className="w-full h-full object-cover"
+              />
+            </div>
+
+            <input
+              type="file"
+              accept="image/*"
+              id="profile-upload"
+              className="hidden"
+              onChange={handleImageChange}
+            />
+
+            <label
+              htmlFor="profile-upload"
+              className="absolute bottom-1 right-0 w-5 h-5 rounded-full bg-blue text-white flex items-center justify-center border-2 border-white cursor-pointer"
+            >
+              <Plus size={12} strokeWidth={4} />
+            </label>
+          </div>
+
+          <h2 className="mt-1.5 text-[15px] text-black font-semibold">
+            {fullname}
+          </h2>
+        </div>
+
+        <HomeFilter
+          activeFilter={activeFilter}
+          setActiveFilter={handleFilterChange}
+        />
+      </div>
+
+      {showSearch && (
+        <div className="px-4 pt-2">
+          <input
+            type="text"
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            placeholder="جست‌وجوی تسک..."
+            className="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-blue"
+          />
+        </div>
+      )}
+
+      <div className="flex-1 min-h-0 overflow-y-auto">
+        {searchedTasks.length > 0 ? (
+          <div
+            className={searchText.trim() !== "" ? "bg-blue/10 rounded-xl" : ""}
+          >
+            <TaskList
+              tasks={searchedTasks}
+              onEdit={editTask}
+              onDelete={deleteTask}
+              onToggle={toggleTask}
+            />
+          </div>
+        ) : searchText.trim() !== "" ? (
+          <p className="text-center text-sm text-gray-400 mt-8">
+            تسکی با این عنوان پیدا نشد.
+          </p>
+        ) : (
+          <TaskList
+            tasks={searchedTasks}
+            onEdit={editTask}
+            onDelete={deleteTask}
+            onToggle={toggleTask}
+          />
+        )}
+      </div>
+
+      <AddButton icon={Plus} onClick={openAddModal} />
+
+      {showModal && (
+        <div
+          className="absolute inset-0 z-50 bg-black/40 flex items-end"
+          onClick={closeModal}
+        >
+          <div
+            className={`bg-white w-full rounded-t-3xl p-5 pb-18 transform transition-transform duration-300 ease-out ${
+              isModalOpen ? "translate-y-0" : "translate-y-full"
+            }`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-5">
+              <h3 className="font-bold text-[16px]">
+                {editingTaskId !== null ? "ویرایش تسک" : "افزودن تسک جدید"}
+              </h3>
+
+              <button onClick={closeModal}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <input
+              type="text"
+              placeholder="تسک را وارد کنید"
+              value={taskTitle}
+              onChange={(e) => setTaskTitle(e.target.value)}
+              className="w-full border border-gray-300 bg-input rounded-[18px] p-2.5 mb-4 outline-none text-sm placeholder:text-gray-400"
+            />
+
+            <div className="relative">
+              <button
+                onClick={() => setShowCategories(!showCategories)}
+                className="w-full border border-gray-300 bg-input rounded-[18px] p-2.5 text-right flex items-center justify-between text-sm"
+              >
+                <span className={taskCategory ? "text-black" : "text-gray-400"}>
+                  {taskCategory || "انتخاب دسته‌بندی"}
+                </span>
+
+                <ChevronDown
+                  size={18}
+                  className={`text-gray-400 transition-transform duration-200 ${
+                    showCategories ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+
+              {showCategories && (
+                <div className="absolute mt-1.5 left-0 right-0 z-50 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden">
+                  {["شخصی", "کار", "خرید"].map((category) => (
+                    <button
+                      key={category}
+                      onClick={() => {
+                        setTaskCategory(category);
+                        setShowCategories(false);
+                      }}
+                      className="w-full text-right p-2 text-[13px] hover:bg-gray-200"
+                    >
+                      {category}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <button
+              onClick={addTask}
+              className="w-full bg-blue text-white rounded-[18px] p-2.5 mt-5 cursor-pointer"
+            >
+              {editingTaskId !== null ? "ذخیره تغییرات" : "افزودن"}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
