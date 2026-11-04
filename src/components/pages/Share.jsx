@@ -326,7 +326,7 @@ export default function Share({ showModal, setShowModal }) {
       {/* مودال */}
       {showModal && (
         <div
-          className="absolute inset-0 z-50 bg-black flex items-end overflow-hidden"
+          className="absolute inset-0 z-50 bg-black/40 flex items-end overflow-hidden"
           onClick={closeModal}
         >
           <div

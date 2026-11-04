@@ -61,7 +61,7 @@ export default function Settings({ theme, setTheme }) {
                   name="theme"
                   value="dark"
                   checked={theme === "dark"}
-                  onChange={() => setTheme("dark")}
+                //   onChange={() => setTheme("dark")}
                   className="accent-white"
                 />
                 dark

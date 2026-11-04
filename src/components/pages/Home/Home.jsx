@@ -21,7 +21,6 @@ export default function Home({ showModal, setShowModal }) {
   };
 
   const categoryParam = searchParams.get("category") || "all";
-
   const activeFilter = categories[categoryParam] || "همه";
 
   const handleFilterChange = (filterTitle) => {
@@ -44,12 +43,15 @@ export default function Home({ showModal, setShowModal }) {
   });
 
   const navigate = useNavigate();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [taskTitle, setTaskTitle] = useState("");
   const [taskCategory, setTaskCategory] = useState("");
   const [showCategories, setShowCategories] = useState(false);
-
   const [editingTaskId, setEditingTaskId] = useState(null);
+
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
     localStorage.setItem("tasks", JSON.stringify(tasks));
@@ -68,7 +70,6 @@ export default function Home({ showModal, setShowModal }) {
     }
   };
 
-  // انیمیشن برای باز شدن مودال
   useEffect(() => {
     if (showModal) {
       const timer = setTimeout(() => {
@@ -81,7 +82,6 @@ export default function Home({ showModal, setShowModal }) {
     setIsModalOpen(false);
   }, [showModal]);
 
-  // باز کردن فرم و افزودن تسک جدید
   const openAddModal = () => {
     setEditingTaskId(null);
     setTaskTitle("");
@@ -90,7 +90,6 @@ export default function Home({ showModal, setShowModal }) {
     setShowModal(true);
   };
 
-  // افزودن یا ویرایش تسک
   const addTask = () => {
     if (taskTitle.trim() === "" || taskCategory === "") {
       return;
@@ -122,7 +121,6 @@ export default function Home({ showModal, setShowModal }) {
     closeModal();
   };
 
-  // باز کردن فرم ویرایش
   const editTask = (task) => {
     setEditingTaskId(task.id);
     setTaskTitle(task.title);
@@ -131,12 +129,10 @@ export default function Home({ showModal, setShowModal }) {
     setShowModal(true);
   };
 
-  // حذف تسک
   const deleteTask = (id) => {
     setTasks((previousTasks) => previousTasks.filter((task) => task.id !== id));
   };
 
-  // تیک زدن و برداشتن تیک تسک
   const toggleTask = (id) => {
     setTasks((previousTasks) =>
       previousTasks.map((task) =>
@@ -150,7 +146,6 @@ export default function Home({ showModal, setShowModal }) {
     );
   };
 
-  // بستن مودال
   const closeModal = () => {
     setShowModal(false);
     setShowCategories(false);
@@ -159,11 +154,19 @@ export default function Home({ showModal, setShowModal }) {
     setTaskCategory("");
   };
 
-  // نمایش تسک‌های دسته‌بندی انتخاب‌شده
+  const toggleSearch = () => {
+    setShowSearch(!showSearch);
+    setSearchText("");
+  };
+
   const filteredTasks =
     activeFilter === "همه"
       ? tasks
       : tasks.filter((task) => task.category === activeFilter);
+
+  const searchedTasks = filteredTasks.filter((task) =>
+    task.title.toLowerCase().includes(searchText.trim().toLowerCase())
+  );
 
   return (
     <div className="w-full flex flex-col flex-1 min-h-0 relative">
@@ -176,8 +179,8 @@ export default function Home({ showModal, setShowModal }) {
         </button>
 
         <div className="absolute top-[12px] right-5 flex items-center gap-3">
-          <button className="text-icon cursor-pointer">
-            <Search size={22} />
+          <button onClick={toggleSearch} className="text-icon cursor-pointer">
+            {showSearch ? <X size={22} /> : <Search size={22} />}
           </button>
 
           <button className="text-icon cursor-pointer">
@@ -222,14 +225,42 @@ export default function Home({ showModal, setShowModal }) {
         />
       </div>
 
-      {/* لیست تسک‌ها */}
+      {showSearch && (
+        <div className="px-4 pt-2">
+          <input
+            type="text"
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            placeholder="جست‌وجوی تسک..."
+            className="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-blue"
+          />
+        </div>
+      )}
+
       <div className="flex-1 min-h-0 overflow-y-auto">
-        <TaskList
-          tasks={filteredTasks}
-          onEdit={editTask}
-          onDelete={deleteTask}
-          onToggle={toggleTask}
-        />
+        {searchedTasks.length > 0 ? (
+          <div
+            className={searchText.trim() !== "" ? "bg-blue/10 rounded-xl" : ""}
+          >
+            <TaskList
+              tasks={searchedTasks}
+              onEdit={editTask}
+              onDelete={deleteTask}
+              onToggle={toggleTask}
+            />
+          </div>
+        ) : searchText.trim() !== "" ? (
+          <p className="text-center text-sm text-gray-400 mt-8">
+            تسکی با این عنوان پیدا نشد.
+          </p>
+        ) : (
+          <TaskList
+            tasks={searchedTasks}
+            onEdit={editTask}
+            onDelete={deleteTask}
+            onToggle={toggleTask}
+          />
+        )}
       </div>
 
       <AddButton icon={Plus} onClick={openAddModal} />
