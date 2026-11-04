@@ -13,7 +13,6 @@ export default function Home({ showModal, setShowModal }) {
 
   const [searchParams, setSearchParams] = useSearchParams();
 
- 
   const categories = {
     all: "همه",
     personal: "شخصی",
@@ -21,7 +20,6 @@ export default function Home({ showModal, setShowModal }) {
     shopping: "خرید",
   };
 
-  
   const categoryParam = searchParams.get("category") || "all";
 
   const activeFilter = categories[categoryParam] || "همه";
@@ -169,7 +167,6 @@ export default function Home({ showModal, setShowModal }) {
 
   return (
     <div className="w-full flex flex-col flex-1 min-h-0 relative">
-      {/* هدر صفحه */}
       <div className="h-[200px] w-full bg-input flex items-center justify-between flex-col px-2 relative shrink-0">
         <button
           onClick={() => navigate("/settings")}
@@ -188,7 +185,6 @@ export default function Home({ showModal, setShowModal }) {
           </button>
         </div>
 
-        {/* پروفایل کاربر */}
         <div className="flex flex-col items-center m-auto mt-[40px]">
           <div className="relative">
             <div className="w-[75px] h-[75px] rounded-full overflow-hidden">
@@ -220,7 +216,6 @@ export default function Home({ showModal, setShowModal }) {
           </h2>
         </div>
 
-        {/* فیلتر دسته‌بندی‌ها */}
         <HomeFilter
           activeFilter={activeFilter}
           setActiveFilter={handleFilterChange}
@@ -237,10 +232,8 @@ export default function Home({ showModal, setShowModal }) {
         />
       </div>
 
-      {/* دکمه افزودن تسک */}
       <AddButton icon={Plus} onClick={openAddModal} />
 
-      {/* مودال افزودن و ویرایش */}
       {showModal && (
         <div
           className="absolute inset-0 z-50 bg-black/40 flex items-end"
@@ -262,7 +255,6 @@ export default function Home({ showModal, setShowModal }) {
               </button>
             </div>
 
-            {/* ورودی تسک */}
             <input
               type="text"
               placeholder="تسک را وارد کنید"
@@ -271,7 +263,6 @@ export default function Home({ showModal, setShowModal }) {
               className="w-full border border-gray-300 bg-input rounded-[18px] p-2.5 mb-4 outline-none text-sm placeholder:text-gray-400"
             />
 
-            {/* انتخاب دسته‌بندی */}
             <div className="relative">
               <button
                 onClick={() => setShowCategories(!showCategories)}

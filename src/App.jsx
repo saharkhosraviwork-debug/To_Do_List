@@ -7,11 +7,13 @@ import Calendar from "./components/pages/Calendar";
 import BottomNav from "./components/public/BottomNav";
 import AppLayout from "./components/layout/AppLayout";
 import Settings from "./components/pages/Setting";
+import Share from "./components/pages/Share";
+import Status from "./components/pages/Status";
 
 export default function App() {
+  // وضعیت مشترک مودال Home و Share
   const [showModal, setShowModal] = useState(false);
 
-  // مدیریت تم برنامه
   const [theme, setTheme] = useState("light");
 
   return (
@@ -60,6 +62,29 @@ export default function App() {
             <AppLayout theme={theme}>
               <Calendar theme={theme} />
               <BottomNav />
+            </AppLayout>
+          }
+        />
+
+        {/* صفحه ارسال */}
+        <Route
+          path="/share"
+          element={
+            <AppLayout theme={theme}>
+              <Share showModal={showModal} setShowModal={setShowModal} />
+
+              {!showModal && <BottomNav theme={theme} />}
+            </AppLayout>
+          }
+        />
+
+        {/* صفحه وضعیت */}
+        <Route
+          path="/status"
+          element={
+            <AppLayout theme={theme}>
+              <Status />
+              <BottomNav theme={theme} />
             </AppLayout>
           }
         />
